@@ -1,28 +1,22 @@
 import { MarkdownView, Notice } from "obsidian";
-import { CsvExportModal, type CsvExportPlugin } from "../ui/csv-export-modal";
-import { getTableAtCursor, getTableAtLine } from "../utils/table-detection";
+import type { ResolvedTableContext } from "../types";
+import type { CsvExportPlugin } from "../ui/csv-export-modal";
+import { openCsvExportForContext } from "../table-actions/export-csv";
+import { TableContextResolver } from "../table-context/resolver";
 
-export function exportTableToCsv(plugin: CsvExportPlugin, preferredLine?: number): void {
+export function exportTableToCsv(
+	plugin: CsvExportPlugin,
+	resolver: TableContextResolver,
+	context?: ResolvedTableContext
+): void {
 	const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
 	if (!view) return;
-	const editor = view.editor;
 
-	const lineResult =
-		typeof preferredLine === "number" ? getTableAtLine(editor, preferredLine) : null;
-	const result = lineResult ?? getTableAtCursor(editor);
-	if (result === null) {
+	const resolved = context ?? resolver.resolveForCommand(view.editor);
+	if (!resolved) {
 		new Notice("No table under click/cursor.");
 		return;
 	}
-	new CsvExportModal(plugin.app, result.rows, plugin, view.file ?? null, result.blockId).open();
-}
 
-export function exportRowsToCsv(plugin: CsvExportPlugin, rows: string[][]): void {
-	const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
-	if (!view) return;
-	if (!rows.length) {
-		new Notice("No table under click/cursor.");
-		return;
-	}
-	new CsvExportModal(plugin.app, rows, plugin, view.file ?? null, null).open();
+	openCsvExportForContext(plugin, resolved, view.file ?? null);
 }

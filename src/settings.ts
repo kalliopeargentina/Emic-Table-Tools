@@ -1,19 +1,19 @@
 import {App, PluginSettingTab, Setting} from "obsidian";
-import MyPlugin from "./main";
+import EmicTableToolsPlugin from "./main";
 import { FolderPickerModal } from "./ui/folder-picker-modal";
 
-export interface MyPluginSettings {
+export interface EmicTableToolsSettings {
 	defaultExportFolder: string;
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
-	defaultExportFolder: ''
-}
+export const DEFAULT_SETTINGS: EmicTableToolsSettings = {
+	defaultExportFolder: ""
+};
 
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+export class EmicTableToolsSettingTab extends PluginSettingTab {
+	plugin: EmicTableToolsPlugin;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: EmicTableToolsPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

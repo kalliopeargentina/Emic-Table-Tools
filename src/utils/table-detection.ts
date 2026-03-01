@@ -31,6 +31,12 @@ function parseBlockIdLine(line: string): string | null {
 	return m ? (m[1] ?? null) : null;
 }
 
+/** Number of lines to look ahead after a table for a block ID (^xxx). */
+const BLOCK_ID_LOOKAHEAD_LINES = 5;
+
+/** Radius (lines) around the given line when searching for a matching table by row content. */
+const MATCHING_TABLE_SEARCH_RADIUS = 25;
+
 /** True if cursor is in a table block (on a table row or on the block ID line immediately after the table). */
 export function cursorIsInTable(editor: Editor): boolean {
 	return getTableAtCursor(editor) !== null;
@@ -93,13 +99,71 @@ export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCurso
 	}
 
 	const nextLineIndex = endLine + 1;
-	const blockId =
-		nextLineIndex < editor.lineCount()
-			? parseBlockIdLine(editor.getLine(nextLineIndex))
-			: null;
+	let blockId: string | null = null;
+	// Block ID can be on the line immediately after the table or after blank lines
+	for (let i = 0; i < BLOCK_ID_LOOKAHEAD_LINES && nextLineIndex + i < editor.lineCount(); i++) {
+		const candidate = parseBlockIdLine(editor.getLine(nextLineIndex + i));
+		if (candidate) {
+			blockId = candidate;
+			break;
+		}
+		const line = editor.getLine(nextLineIndex + i);
+		if (line.trim() !== "") break; // Stop at first non-empty line that isn't a block ID
+	}
 
 	if (rows.length === 0) return null;
 	return { rows, blockId };
+}
+
+/**
+ * Find a table in the editor that matches the given rows (same row count and first row)
+ * and return its blockId if any. Searches around the given line to avoid scanning the whole file.
+ */
+export function getBlockIdForMatchingTable(
+	editor: Editor,
+	rows: string[][],
+	aroundLine: number
+): string | null {
+	if (!rows.length) return null;
+	const lineCount = editor.lineCount();
+	const start = Math.max(0, aroundLine - MATCHING_TABLE_SEARCH_RADIUS);
+	const end = Math.min(lineCount - 1, aroundLine + MATCHING_TABLE_SEARCH_RADIUS);
+	for (let line = start; line <= end; line++) {
+		const result = getTableAtLine(editor, line);
+		if (!result) continue;
+		if (result.rows.length !== rows.length) continue;
+		const r0 = result.rows[0];
+		const d0 = rows[0];
+		if (!r0 || !d0 || r0.length !== d0.length) continue;
+		const firstRowMatch = r0.every((cell, i) => cell === d0[i]);
+		if (!firstRowMatch) continue;
+		return result.blockId ?? null;
+	}
+	return null;
+}
+
+/**
+ * Scan the document from the start to find a table whose rows match the given rows;
+ * returns its blockId if found. Used when context-menu position doesn't give a reliable line.
+ */
+export function findBlockIdForMatchingTableInDocument(
+	editor: Editor,
+	rows: string[][]
+): string | null {
+	if (!rows.length) return null;
+	const lineCount = editor.lineCount();
+	for (let line = 0; line < lineCount; line++) {
+		const result = getTableAtLine(editor, line);
+		if (!result) continue;
+		if (result.rows.length !== rows.length) continue;
+		const r0 = result.rows[0];
+		const d0 = rows[0];
+		if (!r0 || !d0 || r0.length !== d0.length) continue;
+		const firstRowMatch = r0.every((cell, i) => cell === d0[i]);
+		if (!firstRowMatch) continue;
+		return result.blockId ?? null;
+	}
+	return null;
 }
 
 /**

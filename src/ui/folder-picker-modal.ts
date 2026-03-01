@@ -20,7 +20,9 @@ export class FolderPickerModal extends Modal {
 		super(app);
 		this.onChoose = onChoose;
 		const root = this.app.vault.getRoot();
-		collectFolderPaths(root, this.allPaths);
+		if (root) {
+			collectFolderPaths(root, this.allPaths);
+		}
 
 		this.searchInput = document.createElement("input");
 		this.searchInput.type = "text";

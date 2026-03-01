@@ -39,8 +39,11 @@ export class CsvExportModal extends Modal {
 		ta.value = rowsToCsv(this.rows, true);
 		ta.addEventListener("click", () => ta.select());
 
-		const lb = div.createEl("label");
-		const cb = lb.createEl("input", { type: "checkbox", attr: { checked: "checked" } });
+		const lb = div.createEl("label", { attr: { for: "emic-csv-include-header" } });
+		const cb = lb.createEl("input", {
+			type: "checkbox",
+			attr: { id: "emic-csv-include-header", checked: "checked" },
+		});
 		lb.createSpan().setText(" Include table headers");
 		cb.addEventListener("change", () => {
 			ta.value = rowsToCsv(this.rows, cb.checked);
@@ -103,7 +106,8 @@ export class CsvExportModal extends Modal {
 			new Notice("Saved to " + fullPath);
 			this.close();
 		} catch (e) {
-			new Notice("Could not save file: " + (e instanceof Error ? e.message : String(e)));
+			const message = e instanceof Error ? e.message : String(e);
+			new Notice("Could not save file: " + message);
 		}
 	}
 }
