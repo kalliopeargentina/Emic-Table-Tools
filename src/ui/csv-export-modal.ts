@@ -12,12 +12,20 @@ export class CsvExportModal extends Modal {
 	private readonly rows: string[][];
 	private readonly plugin: CsvExportPlugin;
 	private readonly sourceFile: TFile | null;
+	private readonly blockId: string | null;
 
-	constructor(app: App, rows: string[][], plugin: CsvExportPlugin, sourceFile: TFile | null) {
+	constructor(
+		app: App,
+		rows: string[][],
+		plugin: CsvExportPlugin,
+		sourceFile: TFile | null,
+		blockId: string | null
+	) {
 		super(app);
 		this.rows = rows;
 		this.plugin = plugin;
 		this.sourceFile = sourceFile;
+		this.blockId = blockId;
 	}
 
 	onOpen(): void {
@@ -49,6 +57,31 @@ export class CsvExportModal extends Modal {
 		contentEl.empty();
 	}
 
+	private buildFilename(): string {
+		const noteName = this.sourceFile?.basename ?? "export";
+		const sanitize = (s: string) =>
+			s.replace(/[/\\:*?"<>|]/g, "-").replace(/\s+/g, "-") || "table";
+
+		// Prefer block ID (^table-1-example) over first header cell
+		const tableName =
+			this.blockId ?? (this.rows[0]?.[0]?.trim() ? sanitize(this.rows[0][0].trim()) : null);
+
+		if (tableName) {
+			return `${noteName}-${tableName}.csv`;
+		}
+		const now = new Date();
+		const pad = (n: number) => String(n).padStart(2, "0");
+		const ts =
+			now.getFullYear() +
+			pad(now.getMonth() + 1) +
+			pad(now.getDate()) +
+			"-" +
+			pad(now.getHours()) +
+			pad(now.getMinutes()) +
+			pad(now.getSeconds());
+		return `${noteName}-unnamedtable-${ts}.csv`;
+	}
+
 	private async saveToFile(includeHeader: boolean): Promise<void> {
 		const folder = this.plugin.settings.defaultExportFolder?.trim() ?? "";
 		if (!folder) {
@@ -56,10 +89,10 @@ export class CsvExportModal extends Modal {
 			return;
 		}
 		const content = rowsToCsv(this.rows, includeHeader);
-		const baseName = (this.sourceFile?.basename ?? "export") + "-table";
-		let filename = baseName + ".csv";
+		let filename = this.buildFilename();
 		let fullPath = normalizePath(folder + "/" + filename);
 		let n = 0;
+		const baseName = filename.replace(/\.csv$/i, "");
 		while (this.plugin.app.vault.getAbstractFileByPath(fullPath)) {
 			n += 1;
 			filename = baseName + "-" + n + ".csv";
@@ -68,6 +101,7 @@ export class CsvExportModal extends Modal {
 		try {
 			await this.plugin.app.vault.create(fullPath, content);
 			new Notice("Saved to " + fullPath);
+			this.close();
 		} catch (e) {
 			new Notice("Could not save file: " + (e instanceof Error ? e.message : String(e)));
 		}

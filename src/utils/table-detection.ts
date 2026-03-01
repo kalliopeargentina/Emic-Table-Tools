@@ -18,50 +18,69 @@ function parseRowLine(line: string): string[] {
 
 /** Check if the line looks like a table row (has | and at least two cells or one with content). */
 function isTableRow(line: string): boolean {
+	if (!line.includes("|")) return false;
 	const cells = parseRowLine(line);
 	if (cells.length === 0) return false;
 	// Single cell like |a| or |a| is valid
 	return cells.some((c) => c.length > 0) || cells.length >= 2;
 }
 
-/** True if cursor is in a table data/header row (not on a separator line). */
+/** Match Obsidian block ID on its own line: ^block-id */
+function parseBlockIdLine(line: string): string | null {
+	const m = line.trim().match(/^\^([a-zA-Z0-9_-]+)\s*$/);
+	return m ? (m[1] ?? null) : null;
+}
+
+/** True if cursor is in a table block (on a table row or on the block ID line immediately after the table). */
 export function cursorIsInTable(editor: Editor): boolean {
-	const cursor = editor.getCursor();
-	const line = editor.getLine(cursor.line);
-	const cells = parseRowLine(line);
-	if (cells.length === 0) return false;
-	if (isSeparatorLine(cells)) return true; // still "in table"
-	return isTableRow(line);
+	return getTableAtCursor(editor) !== null;
 }
 
 /**
- * Get the full table at the cursor as rows of cell strings (header + data; separator excluded).
- * Returns null if cursor is not inside a table.
+ * Result of getTableAtCursor: rows (header + data, separator excluded) and optional block ID from the line following the table.
  */
-export function getTableAtCursor(editor: Editor): string[][] | null {
-	const cursor = editor.getCursor();
-	const line = editor.getLine(cursor.line);
-	const cells = parseRowLine(line);
-	if (cells.length === 0 || !isTableRow(line)) return null;
+export interface TableAtCursor {
+	rows: string[][];
+	blockId: string | null;
+}
+
+/**
+ * Get the full table at a line as rows of cell strings (header + data; separator excluded).
+ * If the line immediately after the table is a block ID (^xxx), it is returned as blockId and is not included in rows.
+ * Returns null if line is not inside a table block.
+ */
+export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCursor | null {
+	if (lineNumber < 0 || lineNumber >= editor.lineCount()) return null;
+	const line = editor.getLine(lineNumber);
+
+	let startLine: number;
+	let endLine: number;
+
+	if (isTableRow(line)) {
+		startLine = lineNumber;
+		endLine = lineNumber;
+	} else if (lineNumber > 0 && parseBlockIdLine(line)) {
+		// Cursor on block ID line: table is above
+		endLine = lineNumber - 1;
+		startLine = endLine;
+	} else {
+		return null;
+	}
 
 	const lineCount = editor.lineCount();
 	const rows: string[][] = [];
 
 	// Scan upward to find table start
-	let startLine = cursor.line;
 	while (startLine > 0) {
 		const prevLine = editor.getLine(startLine - 1);
-		const prevCells = parseRowLine(prevLine);
-		if (prevCells.length === 0 || !isTableRow(prevLine)) break;
+		if (!isTableRow(prevLine)) break;
 		startLine--;
 	}
 
-	// Scan downward to find table end and collect all table lines
-	let endLine = cursor.line;
+	// Scan downward to find table end
 	while (endLine < lineCount - 1) {
 		const nextLine = editor.getLine(endLine + 1);
-		const nextCells = parseRowLine(nextLine);
-		if (nextCells.length === 0 || !isTableRow(nextLine)) break;
+		if (!isTableRow(nextLine)) break;
 		endLine++;
 	}
 
@@ -73,6 +92,19 @@ export function getTableAtCursor(editor: Editor): string[][] | null {
 		rows.push(rowCells);
 	}
 
+	const nextLineIndex = endLine + 1;
+	const blockId =
+		nextLineIndex < editor.lineCount()
+			? parseBlockIdLine(editor.getLine(nextLineIndex))
+			: null;
+
 	if (rows.length === 0) return null;
-	return rows;
+	return { rows, blockId };
+}
+
+/**
+ * Get table under the current cursor line.
+ */
+export function getTableAtCursor(editor: Editor): TableAtCursor | null {
+	return getTableAtLine(editor, editor.getCursor().line);
 }
