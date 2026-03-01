@@ -1,6 +1,8 @@
 import { Menu, Plugin } from "obsidian";
 import { DEFAULT_SETTINGS, EmicTableToolsSettings, EmicTableToolsSettingTab } from "./settings";
 import { exportTableToCsv } from "./commands/export-table-csv";
+import { assignTableBlockId } from "./commands/assign-table-block-id";
+import { assignAllTablesBlockId } from "./commands/assign-all-tables-block-id";
 import { cursorIsInTable } from "./utils/table-detection";
 import { TableContextResolver } from "./table-context/resolver";
 
@@ -19,6 +21,24 @@ export default class EmicTableToolsPlugin extends Plugin {
 				if (checking) return cursorIsInTable(editor);
 				exportTableToCsv(this, this.tableContextResolver);
 				return undefined;
+			},
+		});
+
+		this.addCommand({
+			id: "assign-table-block-id",
+			name: "Asignar block-id a esta tabla",
+			editorCheckCallback: (checking, editor) => {
+				if (checking) return cursorIsInTable(editor);
+				assignTableBlockId(this, this.tableContextResolver);
+				return undefined;
+			},
+		});
+
+		this.addCommand({
+			id: "assign-all-tables-block-id",
+			name: "Asignar block-id a todas las tablas de esta nota que no tengan",
+			editorCallback: (editor) => {
+				assignAllTablesBlockId(this);
 			},
 		});
 
@@ -46,6 +66,17 @@ export default class EmicTableToolsPlugin extends Plugin {
 								.setTitle("Export table to CSV")
 								.onClick(() =>
 									exportTableToCsv(
+										this,
+										this.tableContextResolver,
+										context
+									)
+								)
+						);
+						submenu.addItem((subItem) =>
+							subItem
+								.setTitle("Asignar block-id a esta tabla")
+								.onClick(() =>
+									assignTableBlockId(
 										this,
 										this.tableContextResolver,
 										context
