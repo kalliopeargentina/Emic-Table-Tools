@@ -2,10 +2,7 @@ import { MarkdownView, Notice, type Plugin } from "obsidian";
 import type { ResolvedTableContext } from "../types";
 import { TableContextResolver } from "../table-context/resolver";
 import { getTableAtLine, findTableBoundsForMatchingRows } from "../utils/table-detection";
-import {
-	sanitizeBasenameForBlockId,
-	getNextTableNumberInNote,
-} from "../utils/block-id";
+import { getNextTableNumberInNote } from "../utils/block-id";
 
 export function assignTableBlockId(
 	plugin: Plugin,
@@ -22,7 +19,6 @@ export function assignTableBlockId(
 	}
 
 	const editor = view.editor;
-	const basename = view.file?.basename ?? "note";
 
 	let result: { startLine: number; endLine: number; blockId: string | null } | null;
 	if (resolved.preferredLine != null) {
@@ -41,9 +37,8 @@ export function assignTableBlockId(
 		return;
 	}
 
-	const sanitized = sanitizeBasenameForBlockId(basename);
-	const nextNum = getNextTableNumberInNote(editor, sanitized);
-	const id = `${sanitized}-tabla-${nextNum}`;
+	const nextNum = getNextTableNumberInNote(editor);
+	const id = `tabla-${nextNum}`;
 
 	const endLine = result.endLine;
 	const pos = { line: endLine, ch: editor.getLine(endLine).length };

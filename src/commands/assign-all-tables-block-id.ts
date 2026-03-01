@@ -1,13 +1,10 @@
 import { MarkdownView, Notice, type Plugin } from "obsidian";
 import { getTableAtLine } from "../utils/table-detection";
-import {
-	sanitizeBasenameForBlockId,
-	getNextTableNumberInNote,
-} from "../utils/block-id";
+import { getNextTableNumberInNote } from "../utils/block-id";
 
 /**
  * Assign block-ids to all tables in the active note that don't have one.
- * Inserts from bottom to top so line numbers stay valid.
+ * Uses format ^tabla-1, ^tabla-2, ... Inserts from bottom to top so line numbers stay valid.
  */
 export function assignAllTablesBlockId(plugin: Plugin): void {
 	const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
@@ -17,8 +14,6 @@ export function assignAllTablesBlockId(plugin: Plugin): void {
 	}
 
 	const editor = view.editor;
-	const basename = view.file?.basename ?? "note";
-	const sanitized = sanitizeBasenameForBlockId(basename);
 
 	const lineCount = editor.lineCount();
 	const insertAfterLines: number[] = [];
@@ -45,12 +40,12 @@ export function assignAllTablesBlockId(plugin: Plugin): void {
 		return;
 	}
 
-	const nextNum = getNextTableNumberInNote(editor, sanitized);
+	const nextNum = getNextTableNumberInNote(editor);
 	// Insert from bottom to top to keep line numbers valid
 	insertAfterLines.sort((a, b) => b - a);
 	for (let i = 0; i < insertAfterLines.length; i++) {
 		const endLine = insertAfterLines[i] as number;
-		const id = `${sanitized}-tabla-${nextNum + i}`;
+		const id = `tabla-${nextNum + i}`;
 		const pos = { line: endLine, ch: editor.getLine(endLine).length };
 		editor.replaceRange("\n^" + id, pos);
 	}
