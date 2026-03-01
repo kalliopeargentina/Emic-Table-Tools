@@ -44,10 +44,13 @@ export function cursorIsInTable(editor: Editor): boolean {
 
 /**
  * Result of getTableAtCursor: rows (header + data, separator excluded) and optional block ID from the line following the table.
+ * startLine/endLine are 0-based line numbers of the first and last table row in the editor.
  */
 export interface TableAtCursor {
 	rows: string[][];
 	blockId: string | null;
+	startLine: number;
+	endLine: number;
 }
 
 /**
@@ -112,7 +115,7 @@ export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCurso
 	}
 
 	if (rows.length === 0) return null;
-	return { rows, blockId };
+	return { rows, blockId, startLine, endLine };
 }
 
 /**
@@ -150,6 +153,18 @@ export function findBlockIdForMatchingTableInDocument(
 	editor: Editor,
 	rows: string[][]
 ): string | null {
+	const result = findTableBoundsForMatchingRows(editor, rows);
+	return result?.blockId ?? null;
+}
+
+/**
+ * Scan the document from the start to find a table whose rows match the given rows;
+ * returns full table bounds (including startLine/endLine) or null.
+ */
+export function findTableBoundsForMatchingRows(
+	editor: Editor,
+	rows: string[][]
+): TableAtCursor | null {
 	if (!rows.length) return null;
 	const lineCount = editor.lineCount();
 	for (let line = 0; line < lineCount; line++) {
@@ -161,7 +176,7 @@ export function findBlockIdForMatchingTableInDocument(
 		if (!r0 || !d0 || r0.length !== d0.length) continue;
 		const firstRowMatch = r0.every((cell, i) => cell === d0[i]);
 		if (!firstRowMatch) continue;
-		return result.blockId ?? null;
+		return result;
 	}
 	return null;
 }
