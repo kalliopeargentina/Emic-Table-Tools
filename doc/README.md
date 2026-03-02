@@ -7,6 +7,8 @@ This folder contains architecture and implementation documentation for the plugi
 | Document | Description |
 |----------|-------------|
 | [export-table-to-csv.md](export-table-to-csv.md) | **Export table to CSV**: architecture, data flow, types, module responsibilities, table context resolution, CSV format, settings, and file reference. |
+| [assign-table-block-id.md](assign-table-block-id.md) | **Assign block-id to tables**: single-table and all-tables commands; context resolution, bounds lookup, block-id format and placement, module responsibilities, file reference. |
+| [transpose-table.md](transpose-table.md) | **Transponer Tabla**: transpose table (rows ↔ columns), context resolution, transpose and GFM formatting, block-id preservation, icon registration, file reference. |
 
 ## Conventions
 
