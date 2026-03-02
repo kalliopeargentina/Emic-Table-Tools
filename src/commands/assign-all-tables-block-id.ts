@@ -35,10 +35,7 @@ export function assignAllTablesBlockId(plugin: Plugin): void {
 		}
 	}
 
-	if (insertAfterLines.length === 0) {
-		new Notice("No tables without block-id in this note.");
-		return;
-	}
+	if (insertAfterLines.length === 0) return;
 
 	const nextNum = getNextTableNumberInNote(editor);
 	// Insert from bottom to top to keep line numbers valid
