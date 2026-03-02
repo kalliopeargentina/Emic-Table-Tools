@@ -2,6 +2,7 @@ import { Menu, Plugin } from "obsidian";
 import { DEFAULT_SETTINGS, EmicTableToolsSettings, EmicTableToolsSettingTab } from "./settings";
 import { exportTableToCsv } from "./commands/export-table-csv";
 import { assignTableBlockId } from "./commands/assign-table-block-id";
+import { transposeTable } from "./commands/transpose-table";
 import { assignAllTablesBlockId } from "./commands/assign-all-tables-block-id";
 import { cursorIsInTable } from "./utils/table-detection";
 import { TableContextResolver } from "./table-context/resolver";
@@ -42,6 +43,16 @@ export default class EmicTableToolsPlugin extends Plugin {
 			},
 		});
 
+		this.addCommand({
+			id: "transpose-table",
+			name: "Transponer Tabla",
+			editorCheckCallback: (checking, editor) => {
+				if (checking) return cursorIsInTable(editor);
+				transposeTable(this, this.tableContextResolver);
+				return undefined;
+			},
+		});
+
 		// Capture phase improves reliability in Live Preview where internal handlers may stop bubbling.
 		this.registerDomEvent(
 			document,
@@ -77,6 +88,17 @@ export default class EmicTableToolsPlugin extends Plugin {
 								.setTitle("Asignar block-id a esta tabla")
 								.onClick(() =>
 									assignTableBlockId(
+										this,
+										this.tableContextResolver,
+										context
+									)
+								)
+						);
+						submenu.addItem((subItem) =>
+							subItem
+								.setTitle("Transponer Tabla")
+								.onClick(() =>
+									transposeTable(
 										this,
 										this.tableContextResolver,
 										context
