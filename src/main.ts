@@ -4,6 +4,7 @@ import { exportTableToCsv } from "./commands/export-table-csv";
 import { assignTableBlockId } from "./commands/assign-table-block-id";
 import { transposeTable } from "./commands/transpose-table";
 import { assignAllTablesBlockId } from "./commands/assign-all-tables-block-id";
+import { addTransposeIcon } from "./icons";
 import { cursorIsInTable } from "./utils/table-detection";
 import { TableContextResolver } from "./table-context/resolver";
 
@@ -14,10 +15,12 @@ export default class EmicTableToolsPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		this.tableContextResolver.setApp(this.app);
+		addTransposeIcon();
 
 		this.addCommand({
 			id: "export-table-csv",
 			name: "Export table to CSV",
+			icon: "file-spreadsheet",
 			editorCheckCallback: (checking, editor) => {
 				if (checking) return cursorIsInTable(editor);
 				exportTableToCsv(this, this.tableContextResolver);
@@ -28,6 +31,7 @@ export default class EmicTableToolsPlugin extends Plugin {
 		this.addCommand({
 			id: "assign-table-block-id",
 			name: "Asignar block-id a esta tabla",
+			icon: "hash",
 			editorCheckCallback: (checking, editor) => {
 				if (checking) return cursorIsInTable(editor);
 				assignTableBlockId(this, this.tableContextResolver);
@@ -38,6 +42,7 @@ export default class EmicTableToolsPlugin extends Plugin {
 		this.addCommand({
 			id: "assign-all-tables-block-id",
 			name: "Asignar block-id a todas las tablas de esta nota que no tengan",
+			icon: "list",
 			editorCallback: (editor) => {
 				assignAllTablesBlockId(this);
 			},
@@ -46,6 +51,7 @@ export default class EmicTableToolsPlugin extends Plugin {
 		this.addCommand({
 			id: "transpose-table",
 			name: "Transponer Tabla",
+			icon: "transpose",
 			editorCheckCallback: (checking, editor) => {
 				if (checking) return cursorIsInTable(editor);
 				transposeTable(this, this.tableContextResolver);
@@ -85,6 +91,7 @@ export default class EmicTableToolsPlugin extends Plugin {
 						);
 						submenu.addItem((subItem) =>
 							subItem
+								.setIcon("hash")
 								.setTitle("Asignar block-id a esta tabla")
 								.onClick(() =>
 									assignTableBlockId(
@@ -96,6 +103,7 @@ export default class EmicTableToolsPlugin extends Plugin {
 						);
 						submenu.addItem((subItem) =>
 							subItem
+								.setIcon("transpose")
 								.setTitle("Transponer Tabla")
 								.onClick(() =>
 									transposeTable(
