@@ -103,6 +103,13 @@ export class CsvExportModal extends Modal {
 		}
 		try {
 			await this.plugin.app.vault.create(fullPath, content);
+			const created = this.plugin.app.vault.getAbstractFileByPath(fullPath) as TFile | null;
+			if (created) {
+				const openAfter = (this.plugin.settings as { openCsvAfterExport?: boolean }).openCsvAfterExport !== false;
+				if (openAfter) {
+					await this.plugin.app.workspace.getLeaf(true).openFile(created);
+				}
+			}
 			new Notice("Saved to " + fullPath);
 			this.close();
 		} catch (e) {

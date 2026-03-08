@@ -1,0 +1,90 @@
+export const esES = {
+	buttons: {
+		undo: "Deshacer",
+		redo: "Rehacer",
+		addRow: "Añadir fila",
+		deleteRow: "Eliminar fila",
+		addColumn: "Añadir columna",
+		deleteColumn: "Eliminar columna",
+		resetColumnWidth: "Restablecer ancho de columnas",
+		sourceMode: "Modo código",
+		tableMode: "Modo tabla",
+		insertRowBefore: "Insertar fila arriba",
+		insertRowAfter: "Insertar fila abajo",
+		insertColBefore: "Insertar columna antes",
+		insertColAfter: "Insertar columna después",
+	},
+	editBar: {
+		placeholder: "Editar celda seleccionada...",
+	},
+	csv: {
+		error: "Error",
+		parsingFailed: "Error al interpretar el CSV. Revisa el formato del archivo.",
+		parseWarning: "Aviso al interpretar CSV:",
+	},
+	settings: {
+		fieldSeparator: "Separador de campos",
+		fieldSeparatorDesc:
+			"Carácter que separa los campos (p. ej. coma, punto y coma, tabulador)",
+		quoteChar: "Carácter de comillas",
+		quoteCharDesc:
+			"Carácter que encierra campos con caracteres especiales",
+	},
+	search: {
+		placeholder: "Buscar en la tabla...",
+		noResults: "No se encontraron resultados",
+		moreResults: "{count} resultados más...",
+		rowColumn: "Fila {row}, Columna {col}",
+	},
+	table: {
+		headerRow: "Fila de encabezado",
+		dataRow: "Fila de datos",
+	},
+	contextMenu: {
+		insertRowAbove: "Insertar fila arriba",
+		insertRowBelow: "Insertar fila abajo",
+		deleteRow: "Eliminar esta fila",
+		moveRowUp: "Mover fila arriba",
+		moveRowDown: "Mover fila abajo",
+		insertColLeft: "Insertar columna a la izquierda",
+		insertColRight: "Insertar columna a la derecha",
+		deleteCol: "Eliminar esta columna",
+		moveColLeft: "Mover columna a la izquierda",
+		moveColRight: "Mover columna a la derecha",
+		createNewCsv: "Crear nuevo archivo CSV",
+	},
+	commands: {
+		createNewCsv: "Crear nuevo archivo CSV",
+		fileExists: "El archivo ya existe",
+		insertCsvAsMarkdown: "Insertar CSV como tabla en la nota",
+	},
+	tableMessages: {
+		atLeastOneRow: "Debe quedar al menos una fila",
+		atLeastOneColumn: "Debe quedar al menos una columna",
+	},
+	notifications: {
+		undo: "Se deshizo la última acción",
+		noMoreUndo: "No hay más que deshacer",
+		redo: "Se rehizo la acción",
+		noMoreRedo: "No hay más que rehacer",
+	},
+	modal: {
+		errors: {
+			createFailed: "No se pudo crear el archivo",
+		},
+		chooseCsvFile: "Elegir archivo CSV",
+	},
+	insertCsv: {
+		noCsvFiles: "No hay archivos CSV en el vault. Abre uno en la vista CSV o crea uno.",
+		parseError: "No se pudo interpretar el CSV: {message}",
+		emptyCsv: "El archivo CSV está vacío.",
+		openNoteFirst: "Abre una nota markdown para insertar la tabla.",
+		tableInserted: "Tabla insertada en la nota.",
+		cancelled: "Operación cancelada.",
+		optionsTitle: "Insertar CSV como tabla",
+		delimiter: "Separador",
+		firstRowAsHeader: "Primera fila como encabezado",
+		insertButton: "Insertar",
+		cancelButton: "Cancelar",
+	},
+};

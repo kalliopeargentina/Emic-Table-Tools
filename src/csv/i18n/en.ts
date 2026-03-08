@@ -1,0 +1,90 @@
+export const enUS = {
+	buttons: {
+		undo: "Undo",
+		redo: "Redo",
+		addRow: "Add row",
+		deleteRow: "Delete row",
+		addColumn: "Add column",
+		deleteColumn: "Delete column",
+		resetColumnWidth: "Reset column width",
+		sourceMode: "Source Mode",
+		tableMode: "Table Mode",
+		insertRowBefore: "Insert row before",
+		insertRowAfter: "Insert row after",
+		insertColBefore: "Insert column before",
+		insertColAfter: "Insert column after",
+	},
+	editBar: {
+		placeholder: "Edit selected cell...",
+	},
+	csv: {
+		error: "Error",
+		parsingFailed: "Failed to parse CSV. Please check file format.",
+		parseWarning: "CSV parse warning:",
+	},
+	settings: {
+		fieldSeparator: "Field Separator",
+		fieldSeparatorDesc:
+			"The character used to separate fields (e.g., comma, semicolon, tab)",
+		quoteChar: "Quote Character",
+		quoteCharDesc:
+			"Character used to enclose fields containing special characters",
+	},
+	search: {
+		placeholder: "Search table content...",
+		noResults: "No matching results found",
+		moreResults: "{count} more results...",
+		rowColumn: "Row {row}, Column {col}",
+	},
+	table: {
+		headerRow: "Header Row",
+		dataRow: "Data Row",
+	},
+	contextMenu: {
+		insertRowAbove: "Insert row above",
+		insertRowBelow: "Insert row below",
+		deleteRow: "Delete this row",
+		moveRowUp: "Move row up",
+		moveRowDown: "Move row down",
+		insertColLeft: "Insert column left",
+		insertColRight: "Insert column right",
+		deleteCol: "Delete this column",
+		moveColLeft: "Move column left",
+		moveColRight: "Move column right",
+		createNewCsv: "Create new CSV file",
+	},
+	commands: {
+		createNewCsv: "Create new CSV file",
+		fileExists: "File already exists",
+		insertCsvAsMarkdown: "Insert CSV as table in note",
+	},
+	tableMessages: {
+		atLeastOneRow: "At least one row must remain",
+		atLeastOneColumn: "At least one column must remain",
+	},
+	notifications: {
+		undo: "Undid last action",
+		noMoreUndo: "There is nothing more to undo",
+		redo: "Redid action",
+		noMoreRedo: "There is nothing more to redo",
+	},
+	modal: {
+		errors: {
+			createFailed: "Failed to create file",
+		},
+		chooseCsvFile: "Choose CSV file",
+	},
+	insertCsv: {
+		noCsvFiles: "No CSV files in vault. Open one in the CSV view or create one.",
+		parseError: "Could not parse CSV: {message}",
+		emptyCsv: "The CSV file is empty.",
+		openNoteFirst: "Open a markdown note to insert the table into.",
+		tableInserted: "Table inserted in note.",
+		cancelled: "Cancelled.",
+		optionsTitle: "Insert CSV as table",
+		delimiter: "Separator",
+		firstRowAsHeader: "First row as header",
+		insertButton: "Insert",
+		cancelButton: "Cancel",
+	},
+};
