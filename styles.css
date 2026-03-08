@@ -6,3 +6,999 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+/* 表格样式 */
+.emic-csv-table {
+ border-collapse: collapse;
+ width: 100%;
+ margin-top: 10px;
+ table-layout: fixed;
+ position: relative;
+ overflow: visible; /* 确保表格内的按钮可见 */
+}
+
+.emic-csv-table td,
+.emic-csv-table th {
+ border: 1px solid var(--background-modifier-border);
+ padding: 2px 4px;
+ position: relative;
+ overflow: visible;
+}
+
+.emic-csv-table th {
+ background-color: var(--background-secondary);
+ font-weight: bold;
+}
+
+.csv-lite-divider {
+ margin: 2px 0;
+ border: none;
+ border-top: 1px solid var(--background-modifier-border);
+}
+
+.csv-lite-cell-long {
+ white-space: pre-wrap;
+}
+/* 输入框共享样式 */
+.csv-cell-input,
+.csv-edit-input {
+ height: auto;
+ padding: 2px 4px;
+ border: none; /* 移除输入框边框 */
+ border-radius: 4px;
+ box-sizing: border-box;
+ background: var(--background-primary);
+ color: var(--text-normal);
+ font-size: inherit;
+ line-height: 1.4;
+}
+
+/* URL display layer */
+.csv-cell-display {
+ padding: 2px 4px;
+ min-height: 24px;
+ cursor: text;
+ white-space: pre-wrap;
+ word-break: break-word;
+ line-height: 1.4;
+ user-select: text;
+ transition: background-color 0.15s ease;
+ position: relative;
+ padding-right: 24px; /* Space for edit button */
+}
+
+/* Hover effect on cell to show it's editable */
+.csv-cell-display:hover {
+ background-color: var(--background-modifier-hover);
+ border-radius: 3px;
+}
+
+/* Edit button for URL cells */
+.csv-cell-edit-btn {
+ cursor: pointer;
+ color: var(--text-muted);
+ font-size: 12px;
+ padding: 2px 4px;
+ border-radius: 3px;
+ opacity: 0;
+ transition: opacity 0.15s ease, background-color 0.15s ease;
+ position: absolute;
+ right: 2px;
+ top: 50%;
+ transform: translateY(-50%);
+}
+
+.csv-cell-display:hover .csv-cell-edit-btn {
+ opacity: 1;
+}
+
+.csv-cell-edit-btn:hover {
+ background-color: var(--interactive-accent);
+ color: var(--text-on-accent);
+}
+
+/* Clickable URL links */
+.csv-cell-link {
+ color: var(--link-color);
+ text-decoration: none;
+ cursor: pointer;
+ border-bottom: 1px solid var(--link-color);
+ transition: all 0.2s ease;
+ position: relative;
+ z-index: 1;
+}
+
+.csv-cell-link:hover {
+ color: var(--link-color-hover);
+ border-bottom-color: var(--link-color-hover);
+ text-decoration: none;
+ background-color: rgba(var(--interactive-accent-rgb), 0.1);
+ padding: 0 2px;
+ border-radius: 2px;
+}
+
+.csv-cell-link:active {
+ opacity: 0.7;
+}
+
+/* csv-cell-input 特有样式（宽度由 JS 控制） */
+.csv-cell-input {
+ width: 100%;
+}
+
+/* csv-edit-input 特有样式 */
+.csv-edit-input {
+ width: 80%;
+ margin: 0 auto 12px auto; /* 添加底部边距 */
+ display: block;
+ text-align: center;
+ border: 1px solid var(--background-modifier-box-shadow);
+}
+
+/* 焦点状态样式 */
+.csv-cell-input:focus,
+.csv-edit-input:focus,
+.emic-csv-table th .csv-cell-input:focus {
+ outline: none;
+ box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2); /* 保留焦点状态的视觉效果 */
+}
+
+.csv-operation-buttons {
+ display: flex;
+ gap: 8px;
+ flex-wrap: wrap;
+ align-items: center;
+ justify-content: space-between;
+ width: 100%;
+}
+
+/* 工具栏吸顶样式 */
+.csv-toolbar-sticky {
+ position: sticky;
+ top: 0;
+ z-index: 20;
+ background: var(--background-primary);
+ box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.06);
+ padding-bottom: 4px;
+}
+
+/* 按钮组样式 */
+.csv-buttons-group {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ flex-wrap: wrap;
+}
+
+/* 紧凑型分隔符下拉容器，放在按钮组内：去掉 Setting 默认的下方 padding 并垂直居中 */
+.csv-delimiter-compact {
+ display: flex;
+ align-items: center;
+}
+.csv-delimiter-compact .setting-item {
+ display: flex !important;
+ align-items: center !important;
+ padding-top: 0 !important;
+ padding-bottom: 0 !important; /* 去掉 11.25px 的底部内边距 */
+ margin: 0 !important;
+}
+.csv-delimiter-compact .setting-item .setting-item-info {
+ display: none; /* 隐藏多余描述，保持紧凑 */
+}
+.csv-delimiter-compact .dropdown {
+ min-width: 72px; /* 视觉上和按钮宽度接近 */
+}
+/* Align dropdown vertically with buttons */
+.csv-delimiter-compact .setting-item-control {
+ margin: 0 !important;
+ padding-left: 0 !important;
+ padding-right: 0 !important;
+}
+.csv-delimiter-compact .setting-item-control .dropdown {
+ height: 32px !important;
+ padding: 0 8px !important;
+ line-height: 32px !important;
+}
+
+/* Pin按钮样式 */
+.csv-pin-btn {
+ position: absolute;
+ top: 2px;
+ right: 2px;
+ width: 18px;
+ height: 18px;
+ padding: 0;
+ border: 1px solid transparent;
+ background: var(--background-primary);
+ cursor: pointer;
+ opacity: 0;
+ transition: all 0.2s ease;
+ z-index: 10;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ border-radius: 3px;
+ box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.csv-pin-btn svg {
+ width: 12px;
+ height: 12px;
+ color: var(--text-muted);
+ transition: color 0.2s ease;
+}
+
+.csv-row-number:hover .csv-pin-btn,
+.csv-col-number:hover .csv-pin-btn {
+ opacity: 1;
+}
+
+.csv-pin-btn.pinned {
+ opacity: 1;
+ background: var(--interactive-accent);
+ border-color: var(--interactive-accent);
+ box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.csv-pin-btn.pinned svg {
+ color: var(--text-on-accent);
+}
+
+.csv-pin-btn:hover {
+ opacity: 1;
+ background: var(--background-modifier-hover);
+ border-color: var(--background-modifier-border-hover);
+ transform: translateY(-1px);
+ box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.csv-pin-btn.pinned:hover {
+ background: var(--interactive-accent-hover);
+ border-color: var(--interactive-accent-hover);
+}
+
+/* Sticky行列样式 */
+
+/* 默认固定表头样式（A、B、C、D...） */
+.csv-sticky-header {
+ position: sticky !important;
+ z-index: 20 !important;
+ background: var(--background-secondary) !important;
+ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+ border-bottom: 2px solid var(--background-modifier-border-hover) !important;
+}
+
+/* 默认固定行号列样式（0、1、2、3...） */
+.csv-sticky-row-number {
+ position: sticky !important;
+ z-index: 20 !important;
+ background: var(--background-secondary) !important;
+ box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15) !important;
+ border-right: 2px solid var(--background-modifier-border-hover) !important;
+}
+
+/* 左上角单元格（行号表头）同时是表头和行号 */
+.csv-sticky-header.csv-sticky-row-number {
+ z-index: 25 !important;
+ background: var(--background-modifier-hover) !important;
+ border-right: 2px solid var(--background-modifier-border-hover) !important;
+ border-bottom: 2px solid var(--background-modifier-border-hover) !important;
+ box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 用户手动固定行样式 */
+.csv-sticky-row {
+ position: sticky !important;
+ z-index: 15 !important;
+ background: var(--background-primary-alt) !important;
+ box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+ border-bottom: 1px solid var(--interactive-accent-hover) !important;
+}
+
+/* 用户手动固定列样式 */
+.csv-sticky-col {
+ position: sticky !important;
+ z-index: 15 !important;
+ background: var(--background-primary-alt) !important;
+ box-shadow: 2px 0 6px rgba(0, 0, 0, 0.12) !important;
+ border-right: 1px solid var(--interactive-accent-hover) !important;
+}
+
+/* 用户手动固定的表头列（既是表头又是固定列） */
+.csv-sticky-header.csv-sticky-col {
+ z-index: 22 !important;
+ background: var(--background-secondary) !important;
+ box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.18) !important;
+ border-right: 2px solid var(--interactive-accent) !important;
+ border-bottom: 2px solid var(--background-modifier-border-hover) !important;
+}
+
+/* 同时是sticky行和列的单元格 */
+.csv-sticky-row.csv-sticky-col {
+ z-index: 18 !important;
+ background: var(--background-secondary-alt) !important;
+ box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.18) !important;
+ border-right: 1px solid var(--interactive-accent-hover) !important;
+ border-bottom: 1px solid var(--interactive-accent-hover) !important;
+}
+
+/* 三重固定：表头+行号+用户固定列（左上角区域的扩展） */
+.csv-sticky-header.csv-sticky-row-number.csv-sticky-col {
+ z-index: 26 !important;
+ background: var(--background-modifier-hover) !important;
+ border-right: 2px solid var(--interactive-accent) !important;
+ border-bottom: 2px solid var(--background-modifier-border-hover) !important;
+ box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 固定列悬停效果增强 */
+.csv-sticky-col:hover,
+.csv-sticky-row:hover {
+ background: var(--background-modifier-hover) !important;
+ transition: background-color 0.2s ease;
+}
+
+/* 固定行/列的最后一个单元格添加更明显的边界 */
+.csv-sticky-col:last-of-type {
+ border-right: 3px solid var(--interactive-accent) !important;
+ box-shadow: 3px 0 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.csv-sticky-row:last-child .csv-sticky-row {
+ border-bottom: 3px solid var(--interactive-accent) !important;
+ box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 确保表格容器支持sticky定位 */
+.table-container {
+ position: relative !important;
+ overflow: auto !important;
+}
+
+.emic-csv-table {
+ position: relative !important;
+}
+
+/* 搜索栏样式 */
+.csv-search-bar-container {
+ display: flex;
+ justify-content: flex-end;
+ flex: 1 1 220px;
+ min-width: 180px;
+ max-width: 320px;
+}
+
+.csv-search-bar-container .csv-search-container {
+ width: 100%;
+}
+
+/* 让搜索输入和按钮高度一致 */
+.csv-search-input {
+ height: 32px;
+ font-size: 1em;
+ padding: 0 8px;
+ border-radius: 4px;
+ border: 1px solid var(--background-modifier-border);
+ background: var(--background-secondary);
+}
+
+/* 列宽调整手柄 */
+.resize-handle {
+ position: absolute;
+ right: 0;
+ top: 0;
+ bottom: 0;
+ width: 5px;
+ background-color: transparent;
+ cursor: col-resize;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+ background-color: var(--interactive-accent);
+}
+
+/* 长文本单元格样式 */
+td input:focus {
+ white-space: pre-wrap;
+}
+
+/* 表格容器 */
+.table-container {
+ width: 100%;
+ position: relative; /* 确保可以使用 z-index */
+ z-index: 5; /* 设置表格的层级 */
+}
+
+
+
+/* 表格包装器，包含滚动条和主表格 */
+.table-wrapper {
+ display: flex;
+ flex-direction: column;
+ width: 100%;
+ gap: 8px;
+}
+
+/* 顶部滚动条样式 */
+.scroll-container {
+ overflow-x: auto;
+ overflow-y: hidden;
+ min-height: 8px; /* 减小高度 */
+ max-height: 8px; /* 减小高度 */
+ scrollbar-width: thin; /* Firefox 细滚动条 */
+ scrollbar-color: var(--background-modifier-border) transparent;
+}
+
+/* Webkit (Chrome/Safari) 滚动条样式 */
+.scroll-container::-webkit-scrollbar {
+ height: 6px; /* 更细的滚动条 */
+}
+
+.scroll-container::-webkit-scrollbar-track {
+ background: transparent;
+ border-radius: 3px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+ background-color: var(--background-modifier-border);
+ border-radius: 3px;
+ transition: background-color 0.2s ease;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+ background-color: var(--background-modifier-border-hover);
+}
+
+/* 主表格滚动区域 */
+.main-scroll {
+ overflow-y: auto; /* 只保留垂直滚动 */
+ flex-grow: 1;
+ border: 1px solid var(--background-modifier-border);
+ border-radius: 4px;
+}
+
+/* 清除之前的 margin 设置，使用 gap 代替 */
+.top-scroll,
+.bottom-scroll {
+ margin: 0;
+}
+
+/* 标签页样式 */
+.csv-tabs {
+ display: flex;
+ flex-direction: column;
+ width: 100%;
+ margin-bottom: 10px;
+}
+
+.csv-tab-headers {
+ display: flex;
+ border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.csv-tab-header {
+ padding: 8px 16px;
+ cursor: pointer;
+ border-bottom: 2px solid transparent;
+ margin-right: 8px;
+ font-weight: 500;
+}
+
+.csv-tab-header:hover {
+ color: var(--interactive-accent);
+}
+
+.csv-tab-header.csv-tab-active {
+ color: var(--interactive-accent);
+ border-bottom-color: var(--interactive-accent);
+}
+
+.csv-tab-panel {
+ display: none;
+ padding: 12px 0;
+}
+
+.csv-tab-panel-active {
+ display: block;
+}
+
+/* 表头行样式 */
+.csv-header-row th {
+ background-color: var(--interactive-accent);
+ color: var(--text-on-accent);
+}
+
+/* 解析器设置样式 暂时注释掉 */
+.csv-parser-settings {
+ display: none;
+ margin-bottom: 16px;
+ padding: 12px;
+ border: 1px solid var(--background-modifier-border);
+ border-radius: 6px;
+ background-color: var(--background-secondary);
+}
+
+.csv-parser-settings .setting-item {
+ border: none;
+ padding: 8px 0;
+}
+
+.csv-parser-settings .setting-item-info {
+ margin-right: 16px;
+}
+
+.csv-parser-settings .setting-item-control input {
+ max-width: 200px;
+}
+
+.emic-csv-table th .csv-cell-input {
+ background: var(--background-modifier-box-shadow-hover);
+}
+
+/* 行号和列号样式 */
+.csv-row-number,
+.csv-col-number {
+ background-color: var(--background-secondary);
+ color: var(--text-muted);
+ font-size: 0.85em;
+ text-align: center;
+ font-weight: 500;
+ user-select: none;
+ cursor: default;
+}
+
+th.csv-row-number {
+ width: 100px !important;
+ min-width: 100px !important;
+ max-width: 100px !important;
+}
+
+td.csv-row-number{
+ width: 100px !important;
+ min-width: 100px !important;
+ max-width: 100px !important;
+ 
+}
+
+.csv-row-number {
+ width: 100px !important;
+ min-width: 100px !important;
+ max-width: 100px !important;
+ border-right: 2px solid var(--background-modifier-border);
+ position: sticky;
+ left: 0;
+ z-index: 10;
+ overflow: visible; /* 确保按钮不会被遮挡 */
+}
+
+.csv-col-number {
+ height: 25px;
+ min-height: 25px;
+ max-height: 25px;
+ border-bottom: 2px solid var(--background-modifier-border);
+ position: sticky;
+ top: 0;
+ z-index: 9;
+}
+
+/* 左上角交叉单元格 */
+.csv-corner-cell {
+ background-color: var(--background-secondary);
+ border-right: 2px solid var(--background-modifier-border);
+ border-bottom: 2px solid var(--background-modifier-border);
+ position: sticky;
+ left: 0;
+ top: 0;
+ z-index: 11;
+ width: 80px;
+ min-width: 70px;
+ max-width: 100px;
+ height: 25px;
+ min-height: 25px;
+ max-height: 25px;
+}
+
+/* 调整普通单元格的z-index */
+.emic-csv-table td,
+.emic-csv-table
+ th:not(.csv-row-number):not(.csv-col-number):not(.csv-corner-cell) {
+ /* ...existing code... */
+ z-index: 1;
+}
+
+/* 行号列点击高亮效果 */
+.csv-row-number:hover {
+ background-color: var(--background-modifier-hover);
+}
+
+.csv-col-number:hover {
+ background-color: var(--background-modifier-hover);
+}
+
+/* 选中行/列的高亮效果 - 统一样式 */
+.csv-row-selected .csv-row-number,
+.csv-col-selected.csv-col-number {
+ background-color: var(--interactive-accent);
+ color: var(--text-on-accent);
+}
+
+/* 选中行的所有单元格高亮 */
+.csv-row-selected td {
+ background-color: var(--interactive-accent-hover);
+}
+
+/* 选中列的所有单元格高亮 */
+.csv-col-selected {
+ background-color: var(--interactive-accent-hover);
+}
+
+/* 选中行的输入框样式调整 */
+.csv-row-selected td .csv-cell-input {
+ background-color: var(--background-primary);
+ border: 1px solid var(--interactive-accent);
+}
+
+/* 选中列的输入框样式调整 */
+.csv-col-selected .csv-cell-input {
+ background-color: var(--background-primary);
+ border: 1px solid var(--interactive-accent);
+}
+
+/* 搜索相关样式 */
+.csv-search-container {
+ position: relative;
+ width: 250px;
+ margin-left: auto; /* 将搜索框推到右侧 */
+}
+
+.csv-search-input {
+ width: 100%;
+ padding: 6px 10px;
+ border: 1px solid var(--background-modifier-border);
+ border-radius: 4px;
+ background: var(--background-primary);
+ color: var(--text-normal);
+ font-size: 13px;
+ height: 32px; /* 与按钮高度保持一致 */
+ box-sizing: border-box;
+}
+
+.csv-search-input:focus {
+ outline: none;
+ border-color: var(--interactive-accent);
+ box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
+}
+
+.csv-search-results {
+ position: absolute;
+ top: 100%;
+ left: 0;
+ right: 0;
+ background: var(--background-primary);
+ border: 1px solid var(--background-modifier-border);
+ border-radius: 4px;
+ border-top: none;
+ max-height: 300px;
+ overflow-y: auto;
+ z-index: 1000;
+ display: none;
+ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.csv-search-results.show {
+ display: block;
+}
+
+.csv-search-result-item {
+ padding: 8px 12px;
+ cursor: pointer;
+ border-bottom: 1px solid var(--background-modifier-border);
+ transition: background-color 0.15s ease;
+}
+
+.csv-search-result-item:last-child {
+ border-bottom: none;
+}
+
+.csv-search-result-item:hover,
+.csv-search-result-item.csv-search-result-hover {
+ background-color: var(--background-modifier-hover);
+}
+
+.csv-search-result-cell {
+ font-weight: 600;
+ color: var(--interactive-accent);
+ margin-right: 8px;
+}
+
+.csv-search-result-address {
+ font-size: 11px;
+ color: var(--text-muted);
+ margin-left: 8px;
+}
+
+.csv-search-result-preview {
+ margin-top: 4px;
+ font-size: 12px;
+ color: var(--text-normal);
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+}
+
+.csv-search-highlight {
+ background-color: var(--text-highlight-bg);
+ color: var(--text-accent);
+ padding: 1px 2px;
+ border-radius: 2px;
+ font-weight: 600;
+}
+
+/* 搜索时高亮当前单元格 */
+.csv-search-current {
+ background-color: var(--text-highlight-bg) !important;
+ border: 2px solid var(--interactive-accent) !important;
+}
+
+.csv-search-current .csv-cell-input {
+ background-color: var(--text-highlight-bg) !important;
+}
+
+/* 源码模式样式 */
+.csv-source-mode {
+ font-family: var(--font-monospace, monospace);
+ font-size: 1em;
+ width: 100%;
+ min-height: 300px;
+ resize: vertical;
+ box-sizing: border-box;
+ margin: 1em 0;
+ padding: 0.5em;
+ background: var(--background-secondary);
+ color: var(--text-normal);
+ border: 1px solid var(--background-modifier-border);
+ border-radius: 4px;
+}
+
+/* 暂时隐藏行和列操作按钮 */
+.csv-insert-row-btn,
+.csv-insert-col-btn,
+.csv-del-row-btn,
+.csv-del-col-btn {
+ display: none !important;
+}
+
+/* 插入/删除行列按钮样式 */
+.csv-insert-row-btn,
+.csv-insert-col-btn,
+.csv-del-row-btn,
+.csv-del-col-btn {
+ display: none;
+ position: absolute;
+ z-index: 50; /* 提高按钮的层级，确保位于表格之上 */
+ width: 18px;
+ height: 18px;
+ padding: 0;
+ margin: 0 2px;
+ border: none;
+ border-radius: 50%;
+ background: var(--background-secondary-alt, #f0f0f0);
+ color: var(--text-muted);
+ font-size: 14px;
+ cursor: pointer;
+ box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+ transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.csv-insert-row-btn:hover,
+.csv-insert-col-btn:hover,
+.csv-del-row-btn:hover,
+.csv-del-col-btn:hover {
+ background: var(--interactive-accent);
+ color: var(--text-on-accent);
+ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 行按钮定位调整 */
+.csv-insert-row-btn.above {
+ left: 0px;
+ top: 50%;
+ transform: translate(0, -50%);
+ z-index: 30;
+}
+.csv-insert-row-btn.below {
+ right: 0px;
+ top: 50%;
+ transform: translate(0, -50%);
+ z-index: 30;
+}
+.csv-del-row-btn {
+ left: 20px;
+ top: 50%;
+ transform: translate(0, -50%);
+ z-index: 30;
+}
+
+/* 列按钮定位 */
+.csv-insert-col-btn.left {
+ left: 0px;
+ top: 50%;
+ transform: translate(0, -50%);
+ z-index: 30;
+}
+.csv-insert-col-btn.right {
+ right: 0px;
+ top: 50%;
+ transform: translate(0, -50%);
+ z-index: 30;
+}
+.csv-del-col-btn {
+ left: 20px;
+ top: 50%;
+ transform: translate(0, -50%);
+ z-index: 30;
+}
+
+/* 提升插入列按钮的 z-index */
+.csv-insert-col-btn.left,
+.csv-insert-col-btn.right,
+.csv-col-number:hover .csv-insert-col-btn,
+.csv-col-selected.csv-col-number .csv-insert-col-btn,
+.csv-dragging-col .csv-insert-col-btn {
+ z-index: 25; /* 提高层级，确保不会被遮挡 */
+}
+
+/* 鼠标悬浮和选中时显示操作按钮 */
+.csv-row-number:hover .csv-insert-row-btn,
+.csv-row-number:hover .csv-del-row-btn,
+.csv-row-selected .csv-insert-row-btn,
+.csv-row-selected .csv-del-row-btn {
+ display: inline-block;
+}
+
+.csv-col-number:hover .csv-insert-col-btn,
+.csv-col-number:hover .csv-del-col-btn,
+.csv-col-selected .csv-insert-col-btn,
+.csv-col-selected .csv-del-col-btn {
+ display: inline-block;
+}
+
+/* 优化按钮显示逻辑，确保互斥 */
+.csv-row-number:hover .csv-insert-row-btn,
+.csv-row-number:hover .csv-del-row-btn {
+ display: inline-block;
+}
+
+.csv-row-number:not(:hover) .csv-insert-row-btn,
+.csv-row-number:not(:hover) .csv-del-row-btn {
+ display: none;
+}
+
+.csv-col-number:hover .csv-insert-col-btn,
+.csv-col-number:hover .csv-del-col-btn {
+ display: inline-block;
+}
+
+.csv-col-number:not(:hover) .csv-insert-col-btn,
+.csv-col-number:not(:hover) .csv-del-col-btn {
+ display: none;
+}
+
+/* 确保操作按钮位于最前面 */
+.button-container {
+ position: relative; /* 确保可以使用 z-index */
+ z-index: 10; /* 提高操作按钮的层级，确保位于表格之上 */
+}
+
+/* 拖拽排序视觉反馈 */
+.csv-col-number.dragging,
+.csv-row-number.dragging {
+ opacity: 0.5;
+ background: var(--color-accent-2, #e0e0e0);
+}
+.csv-col-number.drag-over,
+.csv-row-number.drag-over {
+ outline: 2px dashed var(--color-accent, #888);
+ background: var(--color-accent-1, #f0f0f0);
+}
+
+/* 拖拽时隐藏所有插入/删除按钮 */
+.csv-dragging-row .csv-insert-row-btn,
+.csv-dragging-row .csv-del-row-btn,
+.csv-dragging-col .csv-insert-col-btn,
+.csv-dragging-col .csv-del-col-btn {
+ display: none !important;
+}
+
+/* 调整表格容器样式，确保按钮可见 */
+.emic-csv-table.csv-table {
+ overflow: visible; /* 确保超出表格的按钮不会被隐藏 */
+ position: relative; /* 确保定位的按钮能够正确显示 */
+}
+
+/* 固定行/列的额外视觉提示 */
+.csv-sticky-col::before,
+.csv-sticky-row::before {
+ content: '';
+ position: absolute;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background: linear-gradient(45deg, transparent 30%, var(--interactive-accent-hover) 31%, var(--interactive-accent-hover) 32%, transparent 33%);
+ opacity: 0.08;
+ pointer-events: none;
+ z-index: 1;
+}
+
+/* 固定列的右边界标记 */
+.csv-sticky-col:not(.csv-sticky-header):not(.csv-sticky-row-number)::after {
+ content: '';
+ position: absolute;
+ top: 0;
+ right: -1px;
+ bottom: 0;
+ width: 3px;
+ background: linear-gradient(to bottom, var(--interactive-accent), var(--interactive-accent-hover));
+ opacity: 0.6;
+ pointer-events: none;
+ z-index: 30;
+}
+
+/* 固定行的下边界标记 */
+.csv-sticky-row:not(.csv-sticky-header):not(.csv-sticky-row-number)::after {
+ content: '';
+ position: absolute;
+ left: 0;
+ right: 0;
+ bottom: -1px;
+ height: 3px;
+ background: linear-gradient(to right, var(--interactive-accent), var(--interactive-accent-hover));
+ opacity: 0.6;
+ pointer-events: none;
+ z-index: 30;
+}
+
+/* 确保输入框在渐变背景之上 */
+.csv-sticky-col .csv-cell-input,
+.csv-sticky-row .csv-cell-input {
+ position: relative;
+ z-index: 2;
+}
+
+/* 行号和列号在固定状态下的增强 */
+.csv-sticky-row-number,
+.csv-sticky-header {
+ font-weight: 600;
+ color: var(--text-accent);
+}
+
+/* 固定元素的渐入动画 */
+.csv-sticky-col,
+.csv-sticky-row,
+.csv-sticky-header,
+.csv-sticky-row-number {
+ animation: stickyFadeIn 0.3s ease-out;
+}
+
+@keyframes stickyFadeIn {
+ from {
+ opacity: 0.8;
+ transform: scale(0.98);
+ }
+ to {
+ opacity: 1;
+ transform: scale(1);
+ }
+}
+
+/* 固定列的左侧边界标记（非首列） */
+.csv-sticky-col:not(:first-child) {
+ border-left: 1.5px solid var(--interactive-accent-hover) !important;
+}
+
+/* 如果是表头固定列也要有左边界 */
+.csv-sticky-header.csv-sticky-col:not(:first-child) {
+ border-left: 2px solid var(--interactive-accent) !important;
+}
+
