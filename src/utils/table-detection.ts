@@ -5,6 +5,24 @@ function isSeparatorLine(cells: string[]): boolean {
 	return cells.every((cell) => /^[\s\-:]*$/.test(cell));
 }
 
+/** True if the line is inside a fenced code block (between ``` and ```). */
+function isLineInCodeBlock(editor: Editor, lineNumber: number): boolean {
+	let fenceCount = 0;
+	for (let i = 0; i < lineNumber; i++) {
+		const ln = editor.getLine(i).trim();
+		if (/^```\s*\w*\s*$/.test(ln)) {
+			fenceCount++;
+		}
+	}
+	return fenceCount % 2 === 1;
+}
+
+/** True if the line is blockquote (>) or list item (-, *, +, or 1.). */
+function isBlockquoteOrListItem(line: string): boolean {
+	const t = line.trimStart();
+	return /^>\s?/.test(line) || /^[-*+]\s/.test(t) || /^\d+\.\s/.test(t);
+}
+
 /** Parse a single line into table cells (split by |, trim, drop empty from edges). */
 function parseRowLine(line: string): string[] {
 	const trimmed = line.trim();
@@ -62,6 +80,11 @@ export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCurso
 	if (lineNumber < 0 || lineNumber >= editor.lineCount()) return null;
 	const line = editor.getLine(lineNumber);
 
+	// Do not treat content inside code blocks as tables
+	if (isLineInCodeBlock(editor, lineNumber)) return null;
+	// Do not treat blockquote or list lines as table rows even if they contain |
+	if (isBlockquoteOrListItem(line)) return null;
+
 	let startLine: number;
 	let endLine: number;
 
@@ -69,7 +92,9 @@ export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCurso
 		startLine = lineNumber;
 		endLine = lineNumber;
 	} else if (lineNumber > 0 && parseBlockIdLine(line)) {
-		// Cursor on block ID line: table is above
+		// Cursor on block ID line: table is above only if the line above is actually a table row
+		const lineAbove = editor.getLine(lineNumber - 1);
+		if (!isTableRow(lineAbove) || isBlockquoteOrListItem(lineAbove)) return null;
 		endLine = lineNumber - 1;
 		startLine = endLine;
 	} else {
@@ -93,13 +118,20 @@ export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCurso
 		endLine++;
 	}
 
+	let hasSeparator = false;
 	for (let i = startLine; i <= endLine; i++) {
 		const rowLine = editor.getLine(i);
 		const rowCells = parseRowLine(rowLine);
 		if (rowCells.length === 0) continue;
-		if (isSeparatorLine(rowCells)) continue; // skip separator
+		if (isSeparatorLine(rowCells)) {
+			hasSeparator = true;
+			continue; // skip separator
+		}
 		rows.push(rowCells);
 	}
+
+	// GFM tables require a separator line (|---|---|); reject single-line or non-GFM blocks
+	if (!hasSeparator || rows.length === 0) return null;
 
 	const nextLineIndex = endLine + 1;
 	let blockId: string | null = null;
@@ -114,7 +146,6 @@ export function getTableAtLine(editor: Editor, lineNumber: number): TableAtCurso
 		if (line.trim() !== "") break; // Stop at first non-empty line that isn't a block ID
 	}
 
-	if (rows.length === 0) return null;
 	return { rows, blockId, startLine, endLine };
 }
 
