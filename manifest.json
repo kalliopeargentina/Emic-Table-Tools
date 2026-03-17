@@ -1,7 +1,7 @@
 {
 	"id": "emic-table-tools",
 	"name": "Emic Table Tools",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Table tools for Obsidian: export markdown tables to CSV and more.",
 	"author": "Marcos Buccellato",
